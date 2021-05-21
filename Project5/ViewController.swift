@@ -38,8 +38,29 @@ class ViewController: UITableViewController {
         )
     }
     
-    func submit(word: String) {
+    func isPossible(word: String) -> Bool {
+        return true
+    }
+    
+    func isOriginal(word: String) -> Bool {
+        return true
+    }
+    
+    func isReal(word: String) -> Bool {
+        return true
+    }
+    
+    func submit(_ answer: String) {
+        let lowerAnswer = answer.lowercased()
         
+        guard isPossible(word: lowerAnswer) && isOriginal(word: lowerAnswer) && isReal(word: lowerAnswer) else {
+            return
+        }
+        
+        usedWords.insert(answer, at: 0)
+        
+        let index = IndexPath(row: 0, section: 0)
+        tableView.insertRows(at: [index], with: .automatic)
     }
     
     @objc func promptForAnswer() {
@@ -48,11 +69,11 @@ class ViewController: UITableViewController {
         
         let submitAction = UIAlertAction(title: "Submit", style: .default) {
             [weak self, weak alert] _ in
-            guard let word = alert?.textFields?[0].text else {
+            guard let answer = alert?.textFields?[0].text else {
                 return
             }
             
-            self?.submit(word: word)
+            self?.submit(answer)
         }
         
         alert.addAction(submitAction)
