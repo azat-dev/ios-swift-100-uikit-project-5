@@ -73,10 +73,45 @@ class ViewController: UITableViewController {
         return misspelledRange.location == NSNotFound
     }
     
+    func showErrorAlert(title: String, message: String) {
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(.init(title: "Ok", style: .cancel))
+        present(alert, animated: true)
+    }
+    
     func submit(_ answer: String) {
         let lowerAnswer = answer.lowercased()
         
-        guard isPossible(word: lowerAnswer) && isOriginal(word: lowerAnswer) && isReal(word: lowerAnswer) else {
+        guard let sourceWord = title else {
+            return
+        }
+        
+        guard isPossible(word: lowerAnswer) else {
+            showErrorAlert(
+                title: "Word is impossible",
+                message: "You can't spell that word from \(sourceWord)"
+            )
+            return
+        }
+        
+        guard isOriginal(word: lowerAnswer) else {
+            showErrorAlert(
+                title:"Word used already",
+                message: "The word has already been used"
+            )
+            return
+        }
+        
+        guard isReal(word: lowerAnswer) else {
+            showErrorAlert(
+                title: "Word not recognised",
+                message: "You can't just make them up, you know!"
+            )
             return
         }
         
