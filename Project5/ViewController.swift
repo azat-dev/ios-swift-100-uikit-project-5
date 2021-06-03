@@ -11,8 +11,23 @@ class ViewController: UITableViewController {
     
     var allWords = [String]()
     var usedWords = [String]()
+    var currentWord: String = "" {
+        didSet {
+            title = currentWord
+        }
+    }
     
-    func loadWords() {
+    private func saveData() {
+        UserDefaults.standard.setValue(usedWords, forKey: "usedWords")
+        UserDefaults.standard.setValue(currentWord, forKey: "currentWord")
+    }
+    
+    private func loadSavedData() {
+        usedWords = UserDefaults.standard.object(forKey: "usedWords") as? [String] ?? []
+        currentWord = UserDefaults.standard.string(forKey: "currentWord") ?? ""
+    }
+    
+    private func loadWords() {
         guard let startWordsUrl = Bundle.main.url(forResource: "start", withExtension: "txt") else {
             return
         }
@@ -129,6 +144,7 @@ class ViewController: UITableViewController {
         
         let index = IndexPath(row: 0, section: 0)
         tableView.insertRows(at: [index], with: .automatic)
+        saveData()
     }
     
     @objc func promptForAnswer() {
@@ -153,13 +169,18 @@ class ViewController: UITableViewController {
         
         loadWords()
         initNavigationBar()
-        startGame()
+        loadSavedData()
+        
+        if currentWord.count == 0 {
+            startGame()
+        }
     }
     
     @objc func startGame() {
-        title = allWords.randomElement()
+        currentWord = allWords.randomElement()!
         usedWords.removeAll(keepingCapacity: true)
         tableView.reloadData()
+        saveData()
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
